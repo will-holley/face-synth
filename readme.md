@@ -1,6 +1,6 @@
 # Face Synth
 
-Make music with your face.
+Make music (?) with your face.
 
 ![screenshot](screenshot.png)
 
