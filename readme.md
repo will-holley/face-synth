@@ -1,5 +1,7 @@
 # Face Synth
 
+![screenshot](screenshot.png)
+
 ```bash
 # In your terminal
 python3 -m http.server
