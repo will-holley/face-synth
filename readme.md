@@ -1,5 +1,7 @@
 # Face Synth
 
+Make music with your face.
+
 ![screenshot](screenshot.png)
 
 ```bash
