@@ -263,20 +263,22 @@
         attr("class", "yAxis");
 
       const emotions = {
-        happy: ['C1', 'G4', 'C4', 'D6', 'E4'],
+        happy: ['C5', 'G3', 'C3', 'D4', 'E3'],
         sad: ['A3', 'Db4', 'Gb3', 'Bb3'],
         angry: ['F2','Ab3','C4','Eb4','F4'],
         disgusted: ['C4','E4','Gb4','Bb4'],
         fear: ['C3','E3','G3','Bb3','Db4'],
-        surprised: ['E4', 'G4', 'C5', 'E5'],
+        surprised: ['E3', 'G4', 'C5', 'E5'],
       };
 
       // Initialize a synth
-      const synth = new Tone.DuoSynth({
+      const synth = new Tone.PolySynth({
         "envelope": {
           "sustain": 1,
         }
       }).toMaster();
+
+      const MAX_NOTES = 1;
 
       const updateData = (data) => {
 
@@ -285,8 +287,8 @@
         // synth
         const notes = emotions[dominantEmotion]
         const numNotesToUse = getNotesToUse();
-        const randomNotes = getRandomNotes(notes, 1);
-        synth.triggerAttackRelease(randomNotes[0], "8n");
+        const randomNotes = getRandomNotes(notes, MAX_NOTES);
+        synth.triggerAttackRelease(randomNotes, "8n");
 
         // update
         const rects = svg.selectAll("rect")
