@@ -6,6 +6,7 @@
 <script src="libs/d3.min.js"></script>
 <script src="libs/emotion_classifier.js"></script>
 <script src="libs/emotionmodel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.0.1/Tone.min.js"></script>
 
 <!doctype html>
 <html lang="en">
@@ -272,7 +273,46 @@
         attr("transform", "translate(0, 18)").
         attr("class", "yAxis");
 
+
+      const emotions = {
+        happy: {
+          notes: ['C1', 'G4', 'C4', 'D6', 'E4'],
+          maxNotesToUse: 3,
+        },
+        sad: {
+          notes: ['A3', 'Db4', 'Gb3', 'Bb3'],
+          maxNotesToUse: 3,
+        },
+      };
+
       function updateData(data) {
+
+        const highestConfidence = Math.max.apply(Math, data.map((data) => { return data.value; }))
+        var obj = data.find((data) => { return data.value == highestConfidence; });
+
+        // synth
+
+        const { happy, sad } = emotions;
+
+        if(obj.emotion == 'happy' || obj.emotion == 'sad') {
+
+          const notes = obj.emotion === 'happy' ? happy.notes : sad.notes;
+          const numNotesToUse = getNotesToUse();
+          const randomNotes = getRandomNotes(notes, numNotesToUse);
+
+          if (numNotesToUse === 1) {
+            const synth = new Tone.Synth({
+              "envelope" : {
+                "sustain" : 1,
+              }
+            }).toMaster();
+            synth.triggerAttackRelease(randomNotes[0], "8n");
+          } else {
+            const polySynth = new Tone.PolySynth(numNotesToUse, Tone.Synth).toMaster();
+            polySynth.triggerAttackRelease(randomNotes, "2n");
+          }
+        }
+
         // update
         var rects = svg.selectAll("rect")
           .data(data)
@@ -290,6 +330,25 @@
         // exit
         rects.exit().remove();
         texts.exit().remove();
+      }
+
+      function getRandomNotes(arr, n) {
+        var result = new Array(n),
+            len = arr.length,
+            taken = new Array(len);
+        if (n > len)
+            throw new RangeError("getRandom: more elements taken than available");
+        while (n--) {
+            var x = Math.floor(Math.random() * len);
+            result[n] = arr[x in taken ? taken[x] : x];
+            taken[x] = --len in taken ? taken[len] : len;
+        }
+        return result;
+      }
+
+      function getNotesToUse() {
+        const { sad: { maxNotesToUse } } = emotions;
+        return parseInt(Math.random() * ((maxNotesToUse + 1) - 1) + 1);
       }
 
       /******** fps stats ********/
